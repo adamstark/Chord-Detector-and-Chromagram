@@ -1,0 +1,140 @@
+/**
+* \mainpage Chromagram Estimation and Chord Detection 
+* by Adam Stark and Mark Plumbley.
+* 
+* License
+-------
+
+This code is made available under the GNU General Public License, version 3. Please see the included LICENSE.txt for more details.
+
+Dependencies
+------------
+
+The Chromagram estimation code requires the FFT library FFTW to work.
+
+
+Usage - Chromagram Estimation
+-----------------------------
+
+STEP 1
+
+Include the Chromagram header file as follows:
+
+	#include "Chromagram.h"
+	
+STEP 2
+
+Instantiate the algorithm, specifying the audio frame size and sample rate:
+
+	int frameSize = 512;
+	int sampleRate = 44100;
+
+	Chromagram c(frameSize,sampleRate); 
+
+STEP 3.1 - Audio Input Using An Array
+
+In the processing loop, fill a double precision array with one frame of audio samples: 
+
+	double frame[frameSize]; 
+	
+	// !
+	// do something here to fill the frame with audio samples
+	// !
+
+and then call:
+
+	c.processAudioFrame(frame);
+	
+
+STEP 3.2 - Audio Input Using Vectors
+
+In the processing loop, fill a double precsion vector with one frame of audio samples:
+
+	std::vector<double> frame(frameSize); 
+	
+	// !
+	// do something here to fill the frame with audio samples
+	// !
+
+and then call:
+
+	c.processAudioFrame(frame);	
+
+
+STEP 4 - Getting The Chromagram
+
+The algorithm requires a fair bit of audio to calculate the chromagram, so calculating it at every audio frame of (for example) 512 samples may be unnecessary (and take up lots of CPU cycles).
+
+After calling `processAudioFrame()` (see step 3), simply call:
+
+	if (c.isReady())
+	{
+		std::vector<double> chroma = c.getChromagram();
+		
+		// do something with the chromagram here
+	}
+	
+NOTE - Setting Parameters
+
+You can set a number of parameters for the algorithm. These include...
+
+The audio frame size:
+
+	c.setInputAudioFrameSize(512);
+
+The sampling frequency:
+
+	c.setSamplingFrequency(44100);
+	
+The interval at which the chromagram is calculated (specified in audio samples at the sampling frequency that the algorithm has been initialised with - the default is 8192):
+
+	c.setChromaCalculationInterval(8192);
+
+
+Usage - Chord Detection
+-----------------------
+
+**STEP 1**
+
+Include the ChordDetector header file as follows:
+
+	#include "ChordDetector.h"
+
+**STEP 2**
+
+Instantiate the Chord Detector as follows:
+
+	ChordDetector chordDetector;
+
+**STEP 3**
+
+Fill either a double precision array or vector of length 12 with chromagram values (perhaps estimated from audio, using the Chromagram class):
+
+	double chroma[12]; // or std::vector<double> chroma(12);
+	
+	// !
+	// fill with chromagram values here
+	// !
+	
+Then call:
+
+	chordDetector.detectChord(chroma);
+	
+**STEP 4**
+
+You can then get the root note, chord quality (major, minor, etc) and any other intervals via...
+
+	chordDetector.rootNote
+    chordDetector.quality
+    chordDetector.intervals
+    
+ 
+QUESTIONS?
+----------
+
+Visit:
+
+http://www.adamstark.co.uk 
+
+and send me an email. :)
+*/
