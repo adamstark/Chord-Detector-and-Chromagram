@@ -102,7 +102,6 @@ private:
     std::vector<double> chromagram;
     
     int bufferSize;
-    int hopSize;
     int samplingFrequency;
     int inputAudioFrameSize;
     int downSampledAudioFrameSize;
