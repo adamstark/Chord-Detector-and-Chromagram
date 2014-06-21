@@ -22,6 +22,7 @@
 #ifndef __CHROMAGRAM_H
 #define __CHROMAGRAM_H
 
+#define _USE_MATH_DEFINES
 #include "fftw3.h"
 #include <math.h>
 #include <vector>
@@ -94,12 +95,20 @@ private:
 	void downSampleFrame(std::vector<double> inputAudioFrame);
 
     void makeHammingWindow();
+
+	double round(double val)
+	{
+		return floor(val + 0.5);
+	}
     
     std::vector<double> window;
     std::vector<double> buffer;
     std::vector<double> magnitudeSpectrum;
     std::vector<double> downsampledInputAudioFrame;
     std::vector<double> chromagram;
+    
+    double referenceFrequency;
+    double noteFrequencies[12];
     
     int bufferSize;
     int samplingFrequency;
@@ -113,10 +122,7 @@ private:
     int numSamplesSinceLastCalculation;
     int chromaCalculationInterval;
     bool chromaReady;
-    
-    double referenceFrequency;
-    double noteFrequencies[12];
-    
+
     fftw_plan p;
 	fftw_complex *complexOut;
     fftw_complex *complexIn;
