@@ -22,7 +22,7 @@
 #include "Chromagram.h"
 
 //==================================================================================
-Chromagram::Chromagram(int frameSize,int fs) : referenceFrequency(130.81278265), bufferSize(8192), hopSize(2048), numHarmonics(2), numOctaves(2), numBinsToSearch(2)
+Chromagram::Chromagram(int frameSize,int fs) : referenceFrequency(130.81278265), bufferSize(8192), numHarmonics(2), numOctaves(2), numBinsToSearch(2)
 {
     // calculate note frequencies
     for (int i = 0;i < 12;i++)
@@ -30,10 +30,9 @@ Chromagram::Chromagram(int frameSize,int fs) : referenceFrequency(130.81278265),
         noteFrequencies[i] = referenceFrequency*pow(2,(((float) i)/12));
     }
     
+    
     // set up FFT
-    complexIn = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * bufferSize);		// complex array to hold fft data
-    complexOut = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * bufferSize);	// complex array to hold fft data
-    p = fftw_plan_dft_1d(bufferSize, complexIn, complexOut, FFTW_FORWARD, FFTW_ESTIMATE);	// FFT plan initialisation
+    setupFFT();
     
     // set buffer size
     buffer.resize(bufferSize);
@@ -63,7 +62,7 @@ Chromagram::Chromagram(int frameSize,int fs) : referenceFrequency(130.81278265),
     numSamplesSinceLastCalculation = 0;
     
     // set chroma calculation interval (in samples at the input audio sampling frequency)
-    chromaCalculationInterval = 8192;
+    chromaCalculationInterval = 4096;
     
     // initialise chroma ready variable
     chromaReady = false;
@@ -73,8 +72,23 @@ Chromagram::Chromagram(int frameSize,int fs) : referenceFrequency(130.81278265),
 //==================================================================================
 Chromagram::~Chromagram()
 {
+    // ------------------------------------
+#ifdef USE_FFTW
     // destroy fft plan
     fftw_destroy_plan(p);
+    
+    fftw_free(complexIn);
+    fftw_free(complexOut);
+#endif
+    
+    // ------------------------------------
+#ifdef USE_KISS_FFT
+    // free the Kiss FFT configuration
+    free(cfg);
+    
+    delete [] fftIn;
+    delete [] fftOut;
+#endif
 }
 
 //==================================================================================
@@ -163,6 +177,26 @@ bool Chromagram::isReady()
 }
 
 //==================================================================================
+void Chromagram::setupFFT()
+{
+    // ------------------------------------------------------
+#ifdef USE_FFTW
+    complexIn = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * bufferSize);		// complex array to hold fft data
+    complexOut = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * bufferSize);	// complex array to hold fft data
+    p = fftw_plan_dft_1d(bufferSize, complexIn, complexOut, FFTW_FORWARD, FFTW_ESTIMATE);	// FFT plan initialisation
+#endif
+
+    // ------------------------------------------------------
+#ifdef USE_KISS_FFT
+    // initialise the fft time and frequency domain audio frame arrays
+    fftIn = new kiss_fft_cpx[bufferSize];
+    fftOut = new kiss_fft_cpx[bufferSize];
+    cfg = kiss_fft_alloc(bufferSize,0,0,0);
+#endif
+}
+
+
+//==================================================================================
 void Chromagram::calculateChromagram()
 {
     calculateMagnitudeSpectrum();
@@ -208,6 +242,11 @@ void Chromagram::calculateChromagram()
 //==================================================================================
 void Chromagram::calculateMagnitudeSpectrum()
 {
+    
+#ifdef USE_FFTW
+    // -----------------------------------------------
+    // FFTW VERSION
+    // -----------------------------------------------
     int i = 0;
     
     for (int i = 0;i < bufferSize;i++)
@@ -225,6 +264,31 @@ void Chromagram::calculateMagnitudeSpectrum()
         magnitudeSpectrum[i] = sqrt(pow(complexOut[i][0],2) + pow(complexOut[i][1],2));
         magnitudeSpectrum[i] = sqrt(magnitudeSpectrum[i]);
     }
+#endif
+    
+    
+#ifdef USE_KISS_FFT
+    // -----------------------------------------------
+    // KISS FFT VERSION
+    // -----------------------------------------------
+    int i = 0;
+    
+    for (int i = 0;i < bufferSize;i++)
+    {
+        fftIn[i].r = buffer[i] * window[i];
+        fftIn[i].i = 0.0;
+    }
+    
+    // execute kiss fft
+    kiss_fft(cfg, fftIn, fftOut);
+    
+    // compute first (N/2)+1 mag values
+    for (i = 0;i < (bufferSize/2)+1;i++)
+    {
+        magnitudeSpectrum[i] = sqrt(pow(fftOut[i].r,2) + pow(fftOut[i].i,2));
+        magnitudeSpectrum[i] = sqrt(magnitudeSpectrum[i]);
+    }
+#endif
 }
 
 //==================================================================================

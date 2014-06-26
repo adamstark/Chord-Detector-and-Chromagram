@@ -22,9 +22,17 @@
 #ifndef __CHROMAGRAM_H
 #define __CHROMAGRAM_H
 
-#include "fftw3.h"
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include <vector>
+
+#ifdef USE_FFTW
+#include "fftw3.h"
+#endif
+
+#ifdef USE_KISS_FFT
+#include "kiss_fft.h"
+#endif
 
 //=======================================================================
 /** A class for calculating a Chromagram from input audio
@@ -87,6 +95,8 @@ public:
     
 private:
     
+    void setupFFT();
+    
     void calculateChromagram();
     
     void calculateMagnitudeSpectrum();
@@ -94,6 +104,11 @@ private:
 	void downSampleFrame(std::vector<double> inputAudioFrame);
 
     void makeHammingWindow();
+
+	double round(double val)
+	{
+		return floor(val + 0.5);
+	}
     
     std::vector<double> window;
     std::vector<double> buffer;
@@ -101,8 +116,10 @@ private:
     std::vector<double> downsampledInputAudioFrame;
     std::vector<double> chromagram;
     
+    double referenceFrequency;
+    double noteFrequencies[12];
+    
     int bufferSize;
-    int hopSize;
     int samplingFrequency;
     int inputAudioFrameSize;
     int downSampledAudioFrameSize;
@@ -114,14 +131,19 @@ private:
     int numSamplesSinceLastCalculation;
     int chromaCalculationInterval;
     bool chromaReady;
-    
-    double referenceFrequency;
-    double noteFrequencies[12];
-    
+
+#ifdef USE_FFTW
     fftw_plan p;
 	fftw_complex *complexOut;
     fftw_complex *complexIn;
+#endif
+    
+#ifdef USE_KISS_FFT
+    kiss_fft_cfg cfg;
+    kiss_fft_cpx *fftIn;
+    kiss_fft_cpx *fftOut;
+#endif
     
 };
 
-#endif /* defined(__Chord_Tests__Chromagram__) */
+#endif /* defined(__CHROMAGRAM_H) */
