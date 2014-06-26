@@ -23,9 +23,16 @@
 #define __CHROMAGRAM_H
 
 #define _USE_MATH_DEFINES
-#include "fftw3.h"
 #include <math.h>
 #include <vector>
+
+#ifdef USE_FFTW
+#include "fftw3.h"
+#endif
+
+#ifdef USE_KISS_FFT
+#include "kiss_fft.h"
+#endif
 
 //=======================================================================
 /** A class for calculating a Chromagram from input audio
@@ -88,6 +95,8 @@ public:
     
 private:
     
+    void setupFFT();
+    
     void calculateChromagram();
     
     void calculateMagnitudeSpectrum();
@@ -123,10 +132,18 @@ private:
     int chromaCalculationInterval;
     bool chromaReady;
 
+#ifdef USE_FFTW
     fftw_plan p;
 	fftw_complex *complexOut;
     fftw_complex *complexIn;
+#endif
+    
+#ifdef USE_KISS_FFT
+    kiss_fft_cfg cfg;
+    kiss_fft_cpx *fftIn;
+    kiss_fft_cpx *fftOut;
+#endif
     
 };
 
-#endif /* defined(__Chord_Tests__Chromagram__) */
+#endif /* defined(__CHROMAGRAM_H) */

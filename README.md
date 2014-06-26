@@ -15,7 +15,11 @@ And expanded upon in Adam Stark's PhD Thesis:
 Versions
 --------
 
-==== 1.0 ====
+==== 1.0.1 ==== [26th June 2014]
+
+* Added support for Kiss FFT as an alternative to FFTW
+
+==== 1.0.0 ==== [14th June 2014]
 
 * This is the re-implementation of the chromagram and chord detection code, circa 2014
 
@@ -28,7 +32,10 @@ This code is made available under the GNU General Public License, version 3. Ple
 Dependencies
 ------------
 
-The Chromagram estimation code requires the FFT library FFTW to work.
+The Chromagram estimation code requires one of the following FFT libraries: 
+
+* FFTW [add the flag -DUSE_FFTW]
+* Kiss FFT [add the flag -DUSE_KISS_FFT]
 
 
 Usage - Chromagram Estimation
