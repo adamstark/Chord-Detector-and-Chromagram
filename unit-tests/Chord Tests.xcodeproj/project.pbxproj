@@ -14,6 +14,7 @@
 		E39EEA50194B128400C873F2 /* Test_Chroma.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E39EEA4F194B128400C873F2 /* Test_Chroma.cpp */; };
 		E39EEA56194B128D00C873F2 /* ChordDetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E39EEA52194B128D00C873F2 /* ChordDetector.cpp */; };
 		E39EEA5A194B1E0900C873F2 /* Chromagram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E39EEA58194B1E0900C873F2 /* Chromagram.cpp */; };
+		E3C91DCE195B81FF007ABD86 /* kiss_fft.c in Sources */ = {isa = PBXBuildFile; fileRef = E3C91DCA195B81FF007ABD86 /* kiss_fft.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -41,6 +42,12 @@
 		E39EEA53194B128D00C873F2 /* ChordDetector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChordDetector.h; sourceTree = "<group>"; };
 		E39EEA58194B1E0900C873F2 /* Chromagram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Chromagram.cpp; sourceTree = "<group>"; };
 		E39EEA59194B1E0900C873F2 /* Chromagram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chromagram.h; sourceTree = "<group>"; };
+		E3C91DC8195B81FF007ABD86 /* _kiss_fft_guts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _kiss_fft_guts.h; sourceTree = "<group>"; };
+		E3C91DC9195B81FF007ABD86 /* COPYING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
+		E3C91DCA195B81FF007ABD86 /* kiss_fft.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = kiss_fft.c; sourceTree = "<group>"; };
+		E3C91DCB195B81FF007ABD86 /* kiss_fft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kiss_fft.h; sourceTree = "<group>"; };
+		E3C91DCC195B81FF007ABD86 /* kissfft.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = kissfft.hh; sourceTree = "<group>"; };
+		E3C91DCD195B81FF007ABD86 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +84,7 @@
 				E39EEA47194B124000C873F2 /* Chord_Tests.1 */,
 				E39EEA51194B128D00C873F2 /* src */,
 				E39EEA4E194B128400C873F2 /* tests */,
+				E3C91DBC195B7F23007ABD86 /* libs */,
 			);
 			path = "Chord Tests";
 			sourceTree = "<group>";
@@ -102,6 +110,28 @@
 			);
 			name = src;
 			path = ../../src;
+			sourceTree = "<group>";
+		};
+		E3C91DBC195B7F23007ABD86 /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				E3C91DC7195B81FF007ABD86 /* kiss_fft130 */,
+			);
+			name = libs;
+			path = ../../libs;
+			sourceTree = "<group>";
+		};
+		E3C91DC7195B81FF007ABD86 /* kiss_fft130 */ = {
+			isa = PBXGroup;
+			children = (
+				E3C91DC8195B81FF007ABD86 /* _kiss_fft_guts.h */,
+				E3C91DC9195B81FF007ABD86 /* COPYING */,
+				E3C91DCA195B81FF007ABD86 /* kiss_fft.c */,
+				E3C91DCB195B81FF007ABD86 /* kiss_fft.h */,
+				E3C91DCC195B81FF007ABD86 /* kissfft.hh */,
+				E3C91DCD195B81FF007ABD86 /* README */,
+			);
+			path = kiss_fft130;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -156,6 +186,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E3522044194C9B8B00337DDB /* Test_Chord.cpp in Sources */,
+				E3C91DCE195B81FF007ABD86 /* kiss_fft.c in Sources */,
 				E34A339D194C8E98005E01A5 /* Test_Signals.cpp in Sources */,
 				E39EEA46194B124000C873F2 /* main.cpp in Sources */,
 				E39EEA50194B128400C873F2 /* Test_Chroma.cpp in Sources */,
@@ -246,6 +277,10 @@
 					/usr/local/include,
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-DUSE_FFTW",
+				);
 				OTHER_LDFLAGS = (
 					"-lfftw3",
 					"-lboost_unit_test_framework",
@@ -263,6 +298,10 @@
 					/usr/local/include,
 				);
 				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-DUSE_FFTW",
+				);
 				OTHER_LDFLAGS = (
 					"-lfftw3",
 					"-lboost_unit_test_framework",

@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_SUITE(TestOnChords)
 //======================================================================
 BOOST_AUTO_TEST_CASE(CMajor441kHz)
 {
-    int frameSize = 128;
+    int frameSize = 1024;
     
     Chromagram c(frameSize,44100);
     
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(CMajor441kHz)
 //======================================================================
 BOOST_AUTO_TEST_CASE(CMajor48kHz)
 {
-    int frameSize = 128;
+    int frameSize = 1024;
     
     Chromagram c(frameSize,48000);
     
