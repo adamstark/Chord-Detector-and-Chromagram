@@ -15,13 +15,10 @@ And expanded upon in Adam Stark's PhD Thesis:
 Versions
 --------
 
-<<<<<<< HEAD
-=======
-==== 1.0.2 ==== [21st November 2014]
+==== 1.0.5 ==== [21st November 2014]
 
 * Moved to GitHub, no implementation changes
 
->>>>>>> release/1.0.2
 ==== 1.0.1 ==== [26th June 2014]
 
 * Added support for Kiss FFT as an alternative to FFTW
