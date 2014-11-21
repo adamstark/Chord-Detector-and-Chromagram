@@ -15,7 +15,7 @@ And expanded upon in Adam Stark's PhD Thesis:
 Versions
 --------
 
-==== 1.0.4 ==== [21st November 2014]
+==== 1.0.5 ==== [21st November 2014]
 
 * Moved to GitHub, no implementation changes
 
