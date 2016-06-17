@@ -38,7 +38,7 @@ public:
         Suspended,
         Dominant,
         Dimished5th,
-        Augmented5th,
+        Augmented5th
     };
     
 	/** Constructor */
@@ -47,12 +47,12 @@ public:
     /** Detects the chord from a chromagram. This is the vector interface 
      * @param chroma a vector of length 12 containing the chromagram
      */
-    void detectChord(std::vector<double> chroma);
+    void detectChord (std::vector<double> chroma);
     
     /** Detects the chord from a chromagram. This is the array interface
      * @param chroma an array of length 12 containing the chromagram
      */
-    void detectChord(double *chroma);
+    void detectChord (double* chroma);
 	
     /** The root note of the detected chord */
 	int rootNote;
@@ -65,18 +65,13 @@ public:
 	
 private:
 	void makeChordProfiles();
-
 	void classifyChromagram();
-	
-	double calculateChordScore(double *chroma,double *chordProfile,double biasToUse, double N);
-
-	int minimumIndex(double *array,int length);
+	double calculateChordScore (double* chroma, double* chordProfile, double biasToUse, double N);
+	int minimumIndex (double*array, int length);
 
 	double chromagram[12];
 	double chordProfiles[108][12];
-	
 	double chord[108];
-	
 	double bias;
 };
 

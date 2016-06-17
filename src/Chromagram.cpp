@@ -22,41 +22,45 @@
 #include "Chromagram.h"
 
 //==================================================================================
-Chromagram::Chromagram(int frameSize,int fs) : referenceFrequency(130.81278265), bufferSize(8192), numHarmonics(2), numOctaves(2), numBinsToSearch(2)
+Chromagram::Chromagram (int frameSize, int fs)
+ :  referenceFrequency (130.81278265),
+    bufferSize (8192),
+    numHarmonics (2),
+    numOctaves (2),
+    numBinsToSearch (2)
 {
     // calculate note frequencies
-    for (int i = 0;i < 12;i++)
+    for (int i = 0; i < 12; i++)
     {
-        noteFrequencies[i] = referenceFrequency*pow(2,(((float) i)/12));
+        noteFrequencies[i] = referenceFrequency * pow (2,(((float) i) / 12));
     }
-    
     
     // set up FFT
     setupFFT();
     
     // set buffer size
-    buffer.resize(bufferSize);
+    buffer.resize (bufferSize);
     
     // setup chromagram vector
-    chromagram.resize(12);
+    chromagram.resize (12);
     
     // initialise chromagram
-    for (int i = 0;i < 12;i++)
+    for (int i = 0; i < 12; i++)
     {
         chromagram[i] = 0.0;
     }
     
     // setup magnitude spectrum vector
-    magnitudeSpectrum.resize((bufferSize/2)+1);
+    magnitudeSpectrum.resize ((bufferSize/2)+1);
     
     // make window function
     makeHammingWindow();
     
     // set sampling frequency
-    setSamplingFrequency(fs);
+    setSamplingFrequency (fs);
     
     // set input audio frame size
-    setInputAudioFrameSize(frameSize);
+    setInputAudioFrameSize (frameSize);
     
     // initialise num samples counter
     numSamplesSinceLastCalculation = 0;
@@ -66,7 +70,6 @@ Chromagram::Chromagram(int frameSize,int fs) : referenceFrequency(130.81278265),
     
     // initialise chroma ready variable
     chromaReady = false;
-    
 }
 
 //==================================================================================
@@ -75,37 +78,35 @@ Chromagram::~Chromagram()
     // ------------------------------------
 #ifdef USE_FFTW
     // destroy fft plan
-    fftw_destroy_plan(p);
-    
-    fftw_free(complexIn);
-    fftw_free(complexOut);
+    fftw_destroy_plan (p);
+    fftw_free (complexIn);
+    fftw_free (complexOut);
 #endif
     
     // ------------------------------------
 #ifdef USE_KISS_FFT
     // free the Kiss FFT configuration
-    free(cfg);
-    
+    free (cfg);
     delete [] fftIn;
     delete [] fftOut;
 #endif
 }
 
 //==================================================================================
-void Chromagram::processAudioFrame(double *inputAudioFrame)
+void Chromagram::processAudioFrame (double* inputAudioFrame)
 {
     // create a vector
     std::vector<double> v;
     
     // use the array to initialise it
-    v.assign(inputAudioFrame, inputAudioFrame + inputAudioFrameSize);
+    v.assign (inputAudioFrame, inputAudioFrame + inputAudioFrameSize);
     
     // process the vector
-    processAudioFrame(v);
+    processAudioFrame (v);
 }
 
 //==================================================================================
-void Chromagram::processAudioFrame(std::vector<double> inputAudioFrame)
+void Chromagram::processAudioFrame (std::vector<double> inputAudioFrame)
 {
     // our default state is that the chroma is not ready
     chromaReady = false;
@@ -114,14 +115,15 @@ void Chromagram::processAudioFrame(std::vector<double> inputAudioFrame)
     downSampleFrame(inputAudioFrame);
     
     // move samples back
-    for (int i=0;i < bufferSize-downSampledAudioFrameSize;i++)
+    for (int i = 0; i < bufferSize - downSampledAudioFrameSize; i++)
     {
-        buffer[i] = buffer[i+downSampledAudioFrameSize];
+        buffer[i] = buffer[i + downSampledAudioFrameSize];
     }
     
     int n = 0;
+    
     // add new samples to buffer
-    for (int i = (bufferSize-downSampledAudioFrameSize);i < bufferSize;i++)
+    for (int i = (bufferSize - downSampledAudioFrameSize); i < bufferSize; i++)
     {
         buffer[i] = downsampledInputAudioFrame[n];
         n++;
@@ -143,23 +145,23 @@ void Chromagram::processAudioFrame(std::vector<double> inputAudioFrame)
 }
 
 //==================================================================================
-void Chromagram::setInputAudioFrameSize(int frameSize)
+void Chromagram::setInputAudioFrameSize (int frameSize)
 {
     inputAudioFrameSize = frameSize;
     
-    downsampledInputAudioFrame.resize(inputAudioFrameSize / 4);
+    downsampledInputAudioFrame.resize (inputAudioFrameSize / 4);
     
     downSampledAudioFrameSize = (int) downsampledInputAudioFrame.size();
 }
 
 //==================================================================================
-void Chromagram::setSamplingFrequency(int fs)
+void Chromagram::setSamplingFrequency (int fs)
 {
     samplingFrequency = fs;
 }
 
 //==================================================================================
-void Chromagram::setChromaCalculationInterval(int numSamples)
+void Chromagram::setChromaCalculationInterval (int numSamples)
 {
     chromaCalculationInterval = numSamples;
 }
@@ -181,9 +183,9 @@ void Chromagram::setupFFT()
 {
     // ------------------------------------------------------
 #ifdef USE_FFTW
-    complexIn = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * bufferSize);		// complex array to hold fft data
-    complexOut = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * bufferSize);	// complex array to hold fft data
-    p = fftw_plan_dft_1d(bufferSize, complexIn, complexOut, FFTW_FORWARD, FFTW_ESTIMATE);	// FFT plan initialisation
+    complexIn = (fftw_complex*) fftw_malloc (sizeof (fftw_complex) * bufferSize);		// complex array to hold fft data
+    complexOut = (fftw_complex*) fftw_malloc (sizeof (fftw_complex) * bufferSize);	// complex array to hold fft data
+    p = fftw_plan_dft_1d (bufferSize, complexIn, complexOut, FFTW_FORWARD, FFTW_ESTIMATE);	// FFT plan initialisation
 #endif
 
     // ------------------------------------------------------
@@ -191,7 +193,7 @@ void Chromagram::setupFFT()
     // initialise the fft time and frequency domain audio frame arrays
     fftIn = new kiss_fft_cpx[bufferSize];
     fftOut = new kiss_fft_cpx[bufferSize];
-    cfg = kiss_fft_alloc(bufferSize,0,0,0);
+    cfg = kiss_fft_alloc (bufferSize,0,0,0);
 #endif
 }
 
@@ -201,25 +203,25 @@ void Chromagram::calculateChromagram()
 {
     calculateMagnitudeSpectrum();
     
-    double divisorRatio = (((double) samplingFrequency) / 4.0)/((double)bufferSize);
+    double divisorRatio = (((double) samplingFrequency) / 4.0) / ((double)bufferSize);
     
-    for (int n = 0;n < 12;n++)
+    for (int n = 0; n < 12; n++)
     {
         double chromaSum = 0.0;
         
-        for (int octave = 1; octave <= numOctaves;octave++)
+        for (int octave = 1; octave <= numOctaves; octave++)
         {
             double noteSum = 0.0;
             
-            for (int harmonic = 1;harmonic <= numHarmonics;harmonic++)
+            for (int harmonic = 1; harmonic <= numHarmonics; harmonic++)
             {
-                int centerBin = round((noteFrequencies[n]*octave*harmonic)/divisorRatio);
-                int minBin = centerBin - (numBinsToSearch*harmonic);
-                int maxBin = centerBin + (numBinsToSearch*harmonic);
+                int centerBin = round ((noteFrequencies[n] * octave * harmonic) / divisorRatio);
+                int minBin = centerBin - (numBinsToSearch * harmonic);
+                int maxBin = centerBin + (numBinsToSearch * harmonic);
                 
                 double maxVal = 0.0;
                 
-                for (int k = minBin;k < maxBin;k++)
+                for (int k = minBin; k < maxBin; k++)
                 {
                     if (magnitudeSpectrum[k] > maxVal)
                     {
@@ -249,20 +251,20 @@ void Chromagram::calculateMagnitudeSpectrum()
     // -----------------------------------------------
     int i = 0;
     
-    for (int i = 0;i < bufferSize;i++)
+    for (int i = 0; i < bufferSize; i++)
     {
         complexIn[i][0] = buffer[i] * window[i];
         complexIn[i][1] = 0.0;
     }
     
     // execute fft plan, i.e. compute fft of buffer
-    fftw_execute(p);
+    fftw_execute (p);
     
     // compute first (N/2)+1 mag values
-    for (i = 0;i < (bufferSize/2)+1;i++)
+    for (i = 0; i < (bufferSize / 2) + 1; i++)
     {
-        magnitudeSpectrum[i] = sqrt(pow(complexOut[i][0],2) + pow(complexOut[i][1],2));
-        magnitudeSpectrum[i] = sqrt(magnitudeSpectrum[i]);
+        magnitudeSpectrum[i] = sqrt (pow (complexOut[i][0], 2) + pow (complexOut[i][1], 2));
+        magnitudeSpectrum[i] = sqrt (magnitudeSpectrum[i]);
     }
 #endif
     
@@ -273,28 +275,28 @@ void Chromagram::calculateMagnitudeSpectrum()
     // -----------------------------------------------
     int i = 0;
     
-    for (int i = 0;i < bufferSize;i++)
+    for (int i = 0;i < bufferSize; i++)
     {
         fftIn[i].r = buffer[i] * window[i];
         fftIn[i].i = 0.0;
     }
     
     // execute kiss fft
-    kiss_fft(cfg, fftIn, fftOut);
+    kiss_fft (cfg, fftIn, fftOut);
     
     // compute first (N/2)+1 mag values
-    for (i = 0;i < (bufferSize/2)+1;i++)
+    for (i = 0; i < (bufferSize / 2) + 1; i++)
     {
-        magnitudeSpectrum[i] = sqrt(pow(fftOut[i].r,2) + pow(fftOut[i].i,2));
-        magnitudeSpectrum[i] = sqrt(magnitudeSpectrum[i]);
+        magnitudeSpectrum[i] = sqrt (pow (fftOut[i].r, 2) + pow (fftOut[i].i, 2));
+        magnitudeSpectrum[i] = sqrt (magnitudeSpectrum[i]);
     }
 #endif
 }
 
 //==================================================================================
-void Chromagram::downSampleFrame(std::vector<double> inputAudioFrame)
+void Chromagram::downSampleFrame (std::vector<double> inputAudioFrame)
 {
-    std::vector<double> filteredFrame(inputAudioFrameSize);
+    std::vector<double> filteredFrame (inputAudioFrameSize);
     
     float b0,b1,b2,a1,a2;
     float x_1,x_2,y_1,y_2;
@@ -310,9 +312,9 @@ void Chromagram::downSampleFrame(std::vector<double> inputAudioFrame)
     y_1 = 0;
     y_2 = 0;
     
-    for (int i=0;i < inputAudioFrameSize;i++)
+    for (int i = 0; i < inputAudioFrameSize; i++)
     {
-        filteredFrame[i] = inputAudioFrame[i]*b0 + x_1*b1 + x_2*b2 - y_1*a1 - y_2*a2;
+        filteredFrame[i] = inputAudioFrame[i] * b0 + x_1 * b1 + x_2 * b2 - y_1 * a1 - y_2 * a2;
         
         x_2 = x_1;
         x_1 = inputAudioFrame[i];
@@ -320,20 +322,27 @@ void Chromagram::downSampleFrame(std::vector<double> inputAudioFrame)
         y_1 = filteredFrame[i];
     }
     
-    for (int i=0;i < inputAudioFrameSize/4;i++)
+    for (int i = 0; i < inputAudioFrameSize / 4; i++)
     {
-        downsampledInputAudioFrame[i] = filteredFrame[i*4];
+        downsampledInputAudioFrame[i] = filteredFrame[i * 4];
     }
 }
+
 //==================================================================================
 void Chromagram::makeHammingWindow()
 {
     // set the window to the correct size
-    window.resize(bufferSize);
+    window.resize (bufferSize);
     
     // apply hanning window to buffer
     for (int n = 0; n < bufferSize;n++)
     {
-        window[n] = 0.54 - 0.46*cos(2*M_PI*(((double) n)/((double) bufferSize)));
+        window[n] = 0.54 - 0.46 * cos (2 * M_PI * (((double) n) / ((double) bufferSize)));
     }
+}
+
+//==================================================================================
+double Chromagram::round (double val)
+{
+    return floor (val + 0.5);
 }

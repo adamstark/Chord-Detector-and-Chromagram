@@ -45,7 +45,7 @@ public:
      * @param frameSize the input audio frame size 
      * @param fs the sampling frequency
      */
-    Chromagram(int frameSize,int fs);
+    Chromagram (int frameSize, int fs);
 
     /** Destructor */
     ~Chromagram();
@@ -56,7 +56,7 @@ public:
      * the length indicated by the input audio frame size passed to the constructor
      * @see setInputAudioFrameSize
      */
-    void processAudioFrame(double *inputAudioFrame);
+    void processAudioFrame (double* inputAudioFrame);
     
     /** Process a single audio frame. This will determine whether enough samples
      * have been accumulated and if so, will calculate the chromagram
@@ -64,17 +64,17 @@ public:
      * the length indicated by the input audio frame size passed to the constructor
      * @see setInputAudioFrameSize
      */
-    void processAudioFrame(std::vector<double> inputAudioFrame);
+    void processAudioFrame (std::vector<double> inputAudioFrame);
     
     /** Sets the input audio frame size
      * @param frameSize the input audio frame size
      */
-    void setInputAudioFrameSize(int frameSize);
+    void setInputAudioFrameSize (int frameSize);
     
     /** Set the sampling frequency of the input audio
      * @param fs the sampling frequency in Hz
      */
-    void setSamplingFrequency(int fs);
+    void setSamplingFrequency (int fs);
     
     /** Set the interval at which the chromagram is calculated. As the algorithm requires
      * a significant amount of audio to be accumulated, it may be desirable to have the algorithm
@@ -83,7 +83,7 @@ public:
      * the audio sampling frequency 
      * @param numSamples the number of samples that the algorithm will receive before calculating a new chromagram
      */
-    void setChromaCalculationInterval(int numSamples);
+    void setChromaCalculationInterval (int numSamples);
     
     /** @returns the chromagram vector */
     std::vector<double> getChromagram();
@@ -96,19 +96,11 @@ public:
 private:
     
     void setupFFT();
-    
     void calculateChromagram();
-    
     void calculateMagnitudeSpectrum();
-
-	void downSampleFrame(std::vector<double> inputAudioFrame);
-
+	void downSampleFrame (std::vector<double> inputAudioFrame);
     void makeHammingWindow();
-
-	double round(double val)
-	{
-		return floor(val + 0.5);
-	}
+    double round (double val);
     
     std::vector<double> window;
     std::vector<double> buffer;
@@ -123,25 +115,23 @@ private:
     int samplingFrequency;
     int inputAudioFrameSize;
     int downSampledAudioFrameSize;
-    
     int numHarmonics;
 	int numOctaves;
 	int numBinsToSearch;
-    
     int numSamplesSinceLastCalculation;
     int chromaCalculationInterval;
     bool chromaReady;
 
 #ifdef USE_FFTW
     fftw_plan p;
-	fftw_complex *complexOut;
-    fftw_complex *complexIn;
+	fftw_complex* complexOut;
+    fftw_complex* complexIn;
 #endif
     
 #ifdef USE_KISS_FFT
     kiss_fft_cfg cfg;
-    kiss_fft_cpx *fftIn;
-    kiss_fft_cpx *fftOut;
+    kiss_fft_cpx* fftIn;
+    kiss_fft_cpx* fftOut;
 #endif
     
 };

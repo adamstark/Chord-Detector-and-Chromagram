@@ -26,21 +26,19 @@
 ChordDetector::ChordDetector()
 {
 	bias = 1.06;
-	
 	makeChordProfiles();
-		
 }
 
 //=======================================================================
-void ChordDetector::detectChord(std::vector<double> chroma)
+void ChordDetector::detectChord (std::vector<double> chroma)
 {
-    detectChord(&chroma[0]);
+    detectChord (&chroma[0]);
 }
 
 //=======================================================================
-void ChordDetector::detectChord(double *chroma)
+void ChordDetector::detectChord (double* chroma)
 {
-	for (int i = 0;i < 12;i++)
+	for (int i = 0; i < 12; i++)
 	{
 		chromagram[i] = chroma[i];
 	}
@@ -58,74 +56,72 @@ void ChordDetector::classifyChromagram()
 	int chordindex;
 	
 	// remove some of the 5th note energy from chromagram
-	for (i = 0;i < 12;i++)
+	for (i = 0; i < 12; i++)
 	{
 		fifth = (i+7) % 12;
-		chromagram[fifth] = chromagram[fifth] - (0.1*chromagram[i]);
+		chromagram[fifth] = chromagram[fifth] - (0.1 * chromagram[i]);
 		
 		if (chromagram[fifth] < 0)
 		{
 			chromagram[fifth] = 0;
 		}
-		
 	}
 	
-	
 	// major chords
-	for (j=0;j < 12;j++)
+	for (j = 0; j < 12; j++)
 	{
-		chord[j] = calculateChordScore(chromagram,chordProfiles[j],bias,3);
+		chord[j] = calculateChordScore (chromagram,chordProfiles[j], bias, 3);
 	}
 	
 	// minor chords
-	for (j=12;j < 24;j++)
+	for (j = 12; j < 24; j++)
 	{
-		chord[j] = calculateChordScore(chromagram,chordProfiles[j],bias,3);
+		chord[j] = calculateChordScore (chromagram, chordProfiles[j], bias, 3);
 	}
 	
 	// diminished 5th chords
-	for (j=24;j < 36;j++)
+	for (j = 24; j < 36; j++)
 	{
-		chord[j] = calculateChordScore(chromagram,chordProfiles[j],bias,3);
+		chord[j] = calculateChordScore (chromagram, chordProfiles[j], bias, 3);
 	}
 	
 	// augmented 5th chords
-	for (j=36;j < 48;j++)
+	for (j = 36; j < 48; j++)
 	{
-		chord[j] = calculateChordScore(chromagram,chordProfiles[j],bias,3);
+		chord[j] = calculateChordScore (chromagram, chordProfiles[j], bias, 3);
 	}
 	
 	// sus2 chords
-	for (j=48;j < 60;j++)
+	for (j = 48; j < 60; j++)
 	{
-		chord[j] = calculateChordScore(chromagram,chordProfiles[j],1,3);
+		chord[j] = calculateChordScore (chromagram, chordProfiles[j], 1, 3);
 	}
 	
 	// sus4 chords
-	for (j=60;j < 72;j++)
+	for (j = 60; j < 72; j++)
 	{
-		chord[j] = calculateChordScore(chromagram,chordProfiles[j],1,3);
+		chord[j] = calculateChordScore (chromagram, chordProfiles[j], 1, 3);
 	}
 	
 	// major 7th chords
-	for (j=72;j < 84;j++)
+	for (j = 72; j < 84; j++)
 	{
-		chord[j] = calculateChordScore(chromagram,chordProfiles[j],1,4);
+		chord[j] = calculateChordScore (chromagram, chordProfiles[j], 1, 4);
 	}
 	
 	// minor 7th chords
-	for (j=84;j < 96;j++)
+	for (j = 84; j < 96; j++)
 	{
-		chord[j] = calculateChordScore(chromagram,chordProfiles[j],bias,4);
+		chord[j] = calculateChordScore (chromagram, chordProfiles[j], bias, 4);
 	}
 
 	// dominant 7th chords
-	for (j=96;j < 108;j++)
+	for (j = 96; j < 108; j++)
 	{
-		chord[j] = calculateChordScore(chromagram,chordProfiles[j],bias,4);
+		chord[j] = calculateChordScore (chromagram, chordProfiles[j], bias, 4);
 	}
 	
-	chordindex = minimumIndex(chord,108);
+	chordindex = minimumIndex (chord, 108);
 	
 	// major
 	if (chordindex < 12)
@@ -201,29 +197,28 @@ void ChordDetector::classifyChromagram()
 }
 
 //=======================================================================
-double ChordDetector::calculateChordScore(double *chroma,double *chordProfile,double biasToUse, double N)
+double ChordDetector::calculateChordScore (double* chroma, double* chordProfile, double biasToUse, double N)
 {
 	double sum = 0;
 	double delta;
 
-	for (int i=0;i < 12;i++)
+	for (int i = 0; i < 12; i++)
 	{
-		sum = sum + ((1-chordProfile[i])*(chroma[i]*chroma[i]));
+		sum = sum + ((1 - chordProfile[i]) * (chroma[i] * chroma[i]));
 	}
 
-	delta = sqrt(sum) / ((12 - N)*biasToUse);
+	delta = sqrt (sum) / ((12 - N) * biasToUse);
 	
 	return delta;
 }
 
 //=======================================================================
-int ChordDetector::minimumIndex(double *array,int arrayLength)
+int ChordDetector::minimumIndex (double* array, int arrayLength)
 {
 	double minValue = 100000;
 	int minIndex = 0;
-	int i;
 	
-	for (i = 0;i < arrayLength;i++)
+	for (int i = 0;i < arrayLength;i++)
 	{
 		if (array[i] < minValue)
 		{
@@ -251,7 +246,7 @@ void ChordDetector::makeChordProfiles()
 	double v3 = 1;
 	
 	// set profiles matrix to all zeros
-	for (j = 0;j < 108;j++)
+	for (j = 0; j < 108; j++)
 	{
 		for (t = 0;t < 12;t++)
 		{
@@ -263,11 +258,11 @@ void ChordDetector::makeChordProfiles()
 	j = 0;
 	
 	// major chords
-	for (i = 0;i < 12;i++)
+	for (i = 0; i < 12; i++)
 	{
 		root = i % 12;
-		third = (i+4) % 12;
-		fifth = (i+7) % 12;
+		third = (i + 4) % 12;
+		fifth = (i + 7) % 12;
 		
 		chordProfiles[j][root] = v1;
 		chordProfiles[j][third] = v2;
@@ -277,11 +272,11 @@ void ChordDetector::makeChordProfiles()
 	}
 
 	// minor chords
-	for (i = 0;i < 12;i++)
+	for (i = 0; i < 12; i++)
 	{
 		root = i % 12;
-		third = (i+3) % 12;
-		fifth = (i+7) % 12;
+		third = (i + 3) % 12;
+		fifth = (i + 7) % 12;
 		
 		chordProfiles[j][root] = v1;
 		chordProfiles[j][third] = v2;
@@ -291,11 +286,11 @@ void ChordDetector::makeChordProfiles()
 	}
 
 	// diminished chords
-	for (i = 0;i < 12;i++)
+	for (i = 0; i < 12; i++)
 	{
 		root = i % 12;
-		third = (i+3) % 12;
-		fifth = (i+6) % 12;
+		third = (i + 3) % 12;
+		fifth = (i + 6) % 12;
 		
 		chordProfiles[j][root] = v1;
 		chordProfiles[j][third] = v2;
@@ -305,11 +300,11 @@ void ChordDetector::makeChordProfiles()
 	}	
 	
 	// augmented chords
-	for (i = 0;i < 12;i++)
+	for (i = 0; i < 12; i++)
 	{
 		root = i % 12;
-		third = (i+4) % 12;
-		fifth = (i+8) % 12;
+		third = (i + 4) % 12;
+		fifth = (i + 8) % 12;
 		
 		chordProfiles[j][root] = v1;
 		chordProfiles[j][third] = v2;
@@ -319,11 +314,11 @@ void ChordDetector::makeChordProfiles()
 	}	
 	
 	// sus2 chords
-	for (i = 0;i < 12;i++)
+	for (i = 0; i < 12; i++)
 	{
 		root = i % 12;
-		third = (i+2) % 12;
-		fifth = (i+7) % 12;
+		third = (i + 2) % 12;
+		fifth = (i + 7) % 12;
 		
 		chordProfiles[j][root] = v1;
 		chordProfiles[j][third] = v2;
@@ -333,11 +328,11 @@ void ChordDetector::makeChordProfiles()
 	}
 	
 	// sus4 chords
-	for (i = 0;i < 12;i++)
+	for (i = 0; i < 12; i++)
 	{
 		root = i % 12;
-		third = (i+5) % 12;
-		fifth = (i+7) % 12;
+		third = (i + 5) % 12;
+		fifth = (i + 7) % 12;
 		
 		chordProfiles[j][root] = v1;
 		chordProfiles[j][third] = v2;
@@ -347,12 +342,12 @@ void ChordDetector::makeChordProfiles()
 	}		
 	
 	// major 7th chords
-	for (i = 0;i < 12;i++)
+	for (i = 0; i < 12; i++)
 	{
 		root = i % 12;
-		third = (i+4) % 12;
-		fifth = (i+7) % 12;
-		seventh = (i+11) % 12;
+		third = (i + 4) % 12;
+		fifth = (i + 7) % 12;
+		seventh = (i + 11) % 12;
 		
 		chordProfiles[j][root] = v1;
 		chordProfiles[j][third] = v2;
@@ -363,12 +358,12 @@ void ChordDetector::makeChordProfiles()
 	}	
 	
 	// minor 7th chords
-	for (i = 0;i < 12;i++)
+	for (i = 0; i < 12; i++)
 	{
 		root = i % 12;
-		third = (i+3) % 12;
-		fifth = (i+7) % 12;
-		seventh = (i+10) % 12;
+		third = (i + 3) % 12;
+		fifth = (i + 7) % 12;
+		seventh = (i + 10) % 12;
 		
 		chordProfiles[j][root] = v1;
 		chordProfiles[j][third] = v2;
@@ -379,12 +374,12 @@ void ChordDetector::makeChordProfiles()
 	}
 	
 	// dominant 7th chords
-	for (i = 0;i < 12;i++)
+	for (i = 0; i < 12; i++)
 	{
 		root = i % 12;
-		third = (i+4) % 12;
-		fifth = (i+7) % 12;
-		seventh = (i+10) % 12;
+		third = (i + 4) % 12;
+		fifth = (i + 7) % 12;
+		seventh = (i + 10) % 12;
 		
 		chordProfiles[j][root] = v1;
 		chordProfiles[j][third] = v2;

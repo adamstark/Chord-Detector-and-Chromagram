@@ -15,6 +15,10 @@ And expanded upon in Adam Stark's PhD Thesis:
 Versions
 --------
 
+==== 1.0.7 ==== [17th June 2016]
+
+* Code style update
+
 ==== 1.0.6 ==== [21st November 2014]
 
 * Moved to GitHub, no implementation changes
@@ -58,7 +62,7 @@ Instantiate the algorithm, specifying the audio frame size and sample rate:
 	int frameSize = 512;
 	int sampleRate = 44100;
 
-	Chromagram c(frameSize,sampleRate); 
+	Chromagram c (frameSize,sampleRate); 
 
 **STEP 3.1 - Audio Input Using An Array**
 
@@ -72,14 +76,14 @@ In the processing loop, fill a double precision array with one frame of audio sa
 
 and then call:
 
-	c.processAudioFrame(frame);
+	c.processAudioFrame (frame);
 	
 
 **STEP 3.2 - Audio Input Using Vectors**
 
 In the processing loop, fill a double precsion vector with one frame of audio samples:
 
-	std::vector<double> frame(frameSize); 
+	std::vector<double> frame (frameSize); 
 	
 	// !
 	// do something here to fill the frame with audio samples
@@ -87,7 +91,7 @@ In the processing loop, fill a double precsion vector with one frame of audio sa
 
 and then call:
 
-	c.processAudioFrame(frame);	
+	c.processAudioFrame (frame);	
 
 
 **STEP 4 - Getting The Chromagram**
@@ -109,15 +113,15 @@ You can set a number of parameters for the algorithm. These include...
 
 The audio frame size:
 
-	c.setInputAudioFrameSize(512);
+	c.setInputAudioFrameSize (512);
 
 The sampling frequency:
 
-	c.setSamplingFrequency(44100);
+	c.setSamplingFrequency (44100);
 	
 The interval at which the chromagram is calculated (specified in audio samples at the sampling frequency that the algorithm has been initialised with - the default is 8192):
 
-	c.setChromaCalculationInterval(8192);
+	c.setChromaCalculationInterval (8192);
 
 
 Usage - Chord Detection
@@ -147,7 +151,7 @@ Fill either a double precision array or vector of length 12 with chromagram valu
 	
 Then call:
 
-	chordDetector.detectChord(chroma);
+	chordDetector.detectChord (chroma);
 	
 **STEP 4**
 
